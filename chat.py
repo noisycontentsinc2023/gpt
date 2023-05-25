@@ -55,7 +55,7 @@ async def on_message(message):
     })
 
     # Send the response
-    await message.channel.send(response.choices[0].message['content'])
+    await message.channel.send(f"{message.author.mention} {response.choices[0].message['content']}")
 
 # Run the bot
 bot.run(TOKEN)

@@ -44,7 +44,9 @@ async def on_message(message):
         return
 
     if message.channel.id in CHANNEL_IDS:
-        # Initialize a session if there's none
+        # 사용자에게 메시지를 보내서 대답을 기다리고 있음을 알립니다.
+        temp_msg = await message.channel.send(f"{message.author.mention}님의 질문에 대한 답변을 작성중입니다...")
+        
         if message.author.id not in user_sessions:
             user_sessions[message.author.id] = [{"role": "system", "content": "You are a helpful assistant."}]
             
@@ -73,7 +75,10 @@ async def on_message(message):
         # Generate a message from GPT-3.5 in a separate thread
         loop = asyncio.get_event_loop()
         response = await call_openai_api(user_sessions[message.author.id])
-
+        
+        # API 요청이 완료되면 임시 메시지를 삭제합니다.
+        await temp_msg.delete()
+        
         # Append AI message to the user's session
         user_sessions[message.author.id].append({
             "role": "assistant",

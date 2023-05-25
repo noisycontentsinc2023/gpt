@@ -46,7 +46,7 @@ async def on_message(message):
         ] + user_messages[message.author.id]
 
         # Generate a message from GPT-3.5
-        response = openai.ChatCompletion.create(
+        response = await openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=conversation_history,
         )
@@ -72,4 +72,10 @@ async def on_message(message):
     # Process commands after the message event
     await bot.process_commands(message)
 
-bot.run(TOKEN)
+
+async def start_bot():
+    await bot.start(TOKEN)
+
+# Run the bot
+loop = asyncio.get_event_loop()
+loop.run_until_complete(start_bot())

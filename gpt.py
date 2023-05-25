@@ -46,13 +46,9 @@ async def on_message(message):
 
         # Generate a message from GPT-3.5
         loop = asyncio.get_event_loop()
-
-        # Create a partial function with the model argument
         partial_func = functools.partial(openai.ChatCompletion.create, model="gpt-3.5-turbo")
+        response = await loop.run_in_executor(None, partial_func, conversation_history)  # Pass conversation_history as argument
 
-        # Execute the function in the executor
-        response = await loop.run_in_executor(None, partial_func, messages=conversation_history)
-        
         # Append AI message to the user's messages list
         user_messages[message.author.id].append({
             "role": "assistant",

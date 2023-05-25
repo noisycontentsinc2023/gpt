@@ -56,13 +56,20 @@ async def on_message(message):
         await thinking_message.delete()
 
         # Create an embed message
+        # Create an embed message
+        response_text = response.choices[0].message['content']
+
+        # Truncate the response_text if it is too long
+        if len(response_text) > 2000:
+            response_text = response_text[:1997] + '...'
+
         embed = discord.Embed(
             title="ChatGPT Response",
-            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response.choices[0].message['content']}",
+            description=f"Answer to {message.author.mention}'s question\n{response_text}",
             color=discord.Color.blue()
         )
 
-        # Send the generated message
+        # Send the embed message
         await message.channel.send(embed=embed)
 
     # Process commands after the message event

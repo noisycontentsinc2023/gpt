@@ -41,7 +41,8 @@ async def on_message(message):
         ] + user_messages[message.author.id]
 
         # Generate a message from GPT-3.5
-        response = openai.ChatCompletion.create(
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(None, openai.ChatCompletion.create, 
             model="gpt-3.5-turbo",
             messages=conversation_history,
         )
@@ -55,7 +56,6 @@ async def on_message(message):
         # Delete the 'I'm thinking' message
         await thinking_message.delete()
 
-        # Create an embed message
         # Create an embed message
         response_text = response.choices[0].message['content']
 

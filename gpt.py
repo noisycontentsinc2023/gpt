@@ -39,47 +39,48 @@ async def ai_response(session, conversation):
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
-        return
+    try:
+        if message.author == bot.user:
+            return
 
-    if message.channel.id in CHANNEL_IDS:
-        # Send the 'I'm thinking' message
-        thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
+        if message.channel.id in CHANNEL_IDS:
+            # Send the 'I'm thinking' message
+            thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
 
-        # Initialize a session if there's none
-        if message.author.id not in user_sessions:
-            user_sessions[message.author.id] = [{"role": "system", "content": "You are a helpful assistant."}]
-            
-        user_sessions[message.author.id].append({
-            "role": "user",
-            "content": message.content
-        })
+            # Initialize a session if there's none
+            if message.author.id not in user_sessions:
+                user_sessions[message.author.id] = [{"role": "system", "content": "You are a helpful assistant."}]
 
-        async with aiohttp.ClientSession() as session:
-            # Generate a message from GPT-3.5
-            response = await ai_response(session, user_sessions[message.author.id])
-            if response is None:
-                await thinking_message.delete()
-                await message.channel.send("There was an issue generating a response, please try again later.")
-                return
+            user_sessions[message.author.id].append({
+                "role": "user",
+                "content": message.content
+            })
 
-        # Append AI message to the user's session
-        user_sessions[message.author.id].append({
-            "role": "assistant",
-            "content": response['choices'][0]['message']['content']
-        })
+            async with aiohttp.ClientSession() as session:
+                # Generate a message from GPT-3.5
+                response = await ai_response(session, user_sessions[message.author.id])
+                if response is None:
+                    await thinking_message.delete()
+                    await message.channel.send("There was an issue generating a response, please try again later.")
+                    return
 
-        # Delete the 'I'm thinking' message
-        await thinking_message.delete()
+            # Append AI message to the user's session
+            user_sessions[message.author.id].append({
+                "role": "assistant",
+                "content": response['choices'][0]['message']['content']
+            })
 
-        # Create an embed message
-        embed = discord.Embed(
-            title="ChatGPT Response",
-            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response['choices'][0]['message']['content']}",
-            color=discord.Color.blue()
-        )
-        embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
-        await message.channel.send(embed=embed)
+            # Delete the 'I'm thinking' message
+            await thinking_message.delete()
+
+            # Create an embed message
+            embed = discord.Embed(
+                title="ChatGPT Response",
+                description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response['choices'][0]['message']['content']}",
+                color=discord.Color.blue()
+            )
+            embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
+            await message.channel.send(embed=embed)
 
     # Process commands after the message event
     await bot.process_commands(message)

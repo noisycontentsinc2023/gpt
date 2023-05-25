@@ -4,6 +4,7 @@ import os
 import asyncio
 import datetime
 import pytz
+import concurrent.futures
 from discord.ext import commands
 
 # Load your OpenAI and Discord Tokens
@@ -26,10 +27,17 @@ user_sessions = {}
 user_limits = {}
 
 MAX_USES_PER_DAY = 3
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 
 def get_korea_date():
     return datetime.datetime.now(pytz.timezone('Asia/Seoul')).date()
 
+async def call_openai_api(session):
+    return openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=session,
+        max_tokens=1000
+    )
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -61,13 +69,10 @@ async def on_message(message):
             "role": "user",
             "content": message.content
         })
-
-        # Generate a message from GPT-3.5
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=user_sessions[message.author.id],
-            max_tokens=1000
-        )
+        
+        # Generate a message from GPT-3.5 in a separate thread
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(executor, call_openai_api, user_sessions[message.author.id])
 
         # Append AI message to the user's session
         user_sessions[message.author.id].append({

@@ -85,4 +85,7 @@ async def on_message(message):
         # Process commands after the message event
         await bot.process_commands(message)
 
+    except Exception as e:
+        print(e)
+
 bot.run(TOKEN)

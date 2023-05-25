@@ -68,8 +68,7 @@ async def on_message(message):
             description=f"Answer to {message.author.mention}'s question\n{response_text}",
             color=discord.Color.blue()
         )
-
-        # Send the embed message
+        embed.set_footer(text="This answer was written in the ChatGPT 3.5 model")
         await message.channel.send(embed=embed)
 
     # Process commands after the message event

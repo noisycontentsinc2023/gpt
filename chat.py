@@ -29,7 +29,7 @@ async def on_message(message):
         return
 
     # Only respond in the specified channel
-    if message.channel.id != CHANNEL_IDS:
+    if message.channel.id not in CHANNEL_IDS:
         return
 
     # Initialize the conversation if needed

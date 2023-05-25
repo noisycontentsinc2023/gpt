@@ -25,14 +25,30 @@ async def on_message(message):
         # Send the 'I'm thinking' message
         thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
 
+        # Append user message to their messages list
+        if message.author.id not in user_messages:
+            user_messages[message.author.id] = []
+        user_messages[message.author.id].append({
+            "role": "user",
+            "content": message.content
+        })
+
+        # Generate a conversation history for GPT-3.5
+        conversation_history = [
+            {"role": "system", "content": "You are a helpful assistant."},
+        ] + user_messages[message.author.id]
+
         # Generate a message from GPT-3.5
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": message.content},
-            ],
+            messages=conversation_history,
         )
+
+        # Append AI message to the user's messages list
+        user_messages[message.author.id].append({
+            "role": "assistant",
+            "content": response.choices[0].message['content']
+        })
 
         # Delete the 'I'm thinking' message
         await thinking_message.delete()

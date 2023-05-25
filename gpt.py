@@ -14,7 +14,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 openai.api_key = OPENAI
-CHANNEL_ID = 1111123852546805800  # Replace with your channel id
+CHANNEL_ID = 1111138777453305967  # Replace with your channel id
 
 user_messages = {}
 

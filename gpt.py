@@ -2,6 +2,8 @@ import openai
 import discord
 import os
 import asyncio
+import aiohttp
+import json
 from discord.ext import commands
 
 # Load your OpenAI and Discord Tokens

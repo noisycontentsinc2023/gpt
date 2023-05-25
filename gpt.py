@@ -65,10 +65,10 @@ async def on_message(message):
 
         embed = discord.Embed(
             title="ChatGPT Response",
-            description=f"Answer to {message.author.mention}'s question\n{response_text}",
+            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response_text}",
             color=discord.Color.blue()
         )
-        embed.set_footer(text="This answer was written in the ChatGPT 3.5 model")
+        embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
         await message.channel.send(embed=embed)
 
     # Process commands after the message event

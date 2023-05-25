@@ -16,6 +16,8 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 openai.api_key = OPENAI
 CHANNEL_ID = 1111123852546805800  # Replace with your channel id
 
+user_messages = {}
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:

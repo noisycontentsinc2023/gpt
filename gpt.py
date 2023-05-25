@@ -72,7 +72,7 @@ async def on_message(message):
         
         # Generate a message from GPT-3.5 in a separate thread
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(executor, call_openai_api, user_sessions[message.author.id])
+        response = await call_openai_api(user_sessions[message.author.id])
 
         # Append AI message to the user's session
         user_sessions[message.author.id].append({

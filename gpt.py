@@ -20,18 +20,40 @@ CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # Replace with your c
 user_sessions = {}
 
 
+user_sessions = {}
+user_limits = {}
+
+MAX_USES_PER_DAY = 3
+
+def get_korea_date():
+    return datetime.datetime.now(pytz.timezone('Asia/Seoul')).date()
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
 
     if message.channel.id in CHANNEL_IDS:
-        # Send the 'I'm thinking' message
-        thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
-
         # Initialize a session if there's none
         if message.author.id not in user_sessions:
             user_sessions[message.author.id] = [{"role": "system", "content": "You are a helpful assistant."}]
+            
+        if message.author.id not in user_limits:
+            user_limits[message.author.id] = {"date": get_korea_date(), "count": 0}
+
+        if user_limits[message.author.id]["date"] != get_korea_date():
+            user_limits[message.author.id] = {"date": get_korea_date(), "count": 0}
+
+        if user_limits[message.author.id]["count"] >= MAX_USES_PER_DAY:
+            embed = discord.Embed(
+                title="사용 횟수 초과",
+                description=f"{message.author.mention}님 하루 최대 사용 횟수 {MAX_USES_PER_DAY} 가 이미 소진되었습니다",
+                color=discord.Color.red()
+            )
+            await message.channel.send(embed=embed)
+            return
+        else:
+            user_limits[message.author.id]["count"] += 1
             
         user_sessions[message.author.id].append({
             "role": "user",
@@ -40,9 +62,9 @@ async def on_message(message):
 
         # Generate a message from GPT-3.5
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=user_sessions[message.author.id],
-            max_tokens=250 
+            max_tokens=1000
         )
 
         # Append AI message to the user's session
@@ -51,16 +73,14 @@ async def on_message(message):
             "content": response.choices[0].message['content']
         })
 
-        # Delete the 'I'm thinking' message
-        await thinking_message.delete()
-
         # Create an embed message
         embed = discord.Embed(
             title="ChatGPT Response",
             description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response.choices[0].message['content']}",
             color=discord.Color.blue()
         )
-        embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
+        remaining_uses = MAX_USES_PER_DAY - user_limits[message.author.id]["count"]
+        embed.set_footer(text=f"이 답변은 ChatGPT-4 모델로 작성되었습니다. 남은 사용 횟수: {remaining_uses}")
         await message.channel.send(embed=embed)
 
     # Process commands after the message event

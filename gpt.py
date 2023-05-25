@@ -1,7 +1,9 @@
 import openai
 import discord
 import os
+import asyncio
 from discord.ext import commands
+
 
 # Load your OpenAI and Discord Tokens
 TOKEN = os.environ['TOKEN']

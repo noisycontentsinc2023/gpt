@@ -76,6 +76,17 @@ async def on_message(message):
 async def start_bot():
     await bot.start(TOKEN)
 
-# Run the bot
+async def close_bot():
+    await bot.close()
+
+async def setup():
+    await bot.wait_until_ready()
+    print('Bot is ready')
+
 loop = asyncio.get_event_loop()
-loop.run_until_complete(start_bot())
+try:
+    loop.run_until_complete(asyncio.gather(start_bot(), setup()))
+except KeyboardInterrupt:
+    loop.run_until_complete(close_bot())
+finally:
+    loop.close()

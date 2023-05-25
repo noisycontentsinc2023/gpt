@@ -2,6 +2,9 @@ import openai
 import discord
 import os
 
+intents = discord.Intents.default()
+intents.members = True
+
 # Load your OpenAI and Discord Tokens
 TOKEN = os.environ['TOKEN']
 OPENAI = os.environ['OPENAI']

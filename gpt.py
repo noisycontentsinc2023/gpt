@@ -18,9 +18,10 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 openai.api_key = OPENAI
-CHANNEL_ID = 1111138777453305967  # Replace with your channel id
+CHANNEL_ID = 1111123852546805800  # Replace with your channel id
 
 user_messages = {}
+
 
 @bot.event
 async def on_message(message):
@@ -64,6 +65,9 @@ async def on_message(message):
         # Truncate the response_text if it is too long
         if len(response_text) > 2000:
             response_text = response_text[:1997] + '...'
+
+        # Encode response_text using 'utf-8' codec
+        response_text = response_text.encode('utf-8', 'ignore').decode('utf-8')
 
         embed = discord.Embed(
             title="ChatGPT Response",

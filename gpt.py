@@ -1,6 +1,7 @@
 import openai
 import discord
 import os
+from discord.ext import commands
 
 intents = discord.Intents.default()
 intents.members = True
@@ -11,19 +12,22 @@ OPENAI = os.environ['OPENAI']
 
 CHANNEL_ID = 1111123852546805800  # Replace with your channel id
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as', self.user)
+@bot.event
+async def on_ready():
+    print('Logged on as', bot.user)
 
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
 
-        if message.channel.id == CHANNEL_ID:
-            # Here, you would add the code to generate a message from GPT-3.5
-            # For now, we'll just respond with "gpt-3.5-turbo".
-            response = "gpt-3.5-turbo"
-            await message.channel.send(response)
+    if message.channel.id == CHANNEL_ID:
+        # Here, you would add the code to generate a message from GPT-3.5
+        # For now, we'll just respond with "gpt-3.5-turbo".
+        response = "gpt-3.5-turbo"
+        await message.channel.send(response)
 
-client = MyClient()
-client.run(DISCORD_TOKEN)
+    # This line is needed so the bot can process commands.
+    await bot.process_commands(message)
+
+bot.run(TOKEN)

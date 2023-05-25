@@ -82,7 +82,7 @@ async def on_message(message):
             embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
             await message.channel.send(embed=embed)
 
-    # Process commands after the message event
-    await bot.process_commands(message)
+        # Process commands after the message event
+        await bot.process_commands(message)
 
 bot.run(TOKEN)

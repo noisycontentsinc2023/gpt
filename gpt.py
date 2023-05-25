@@ -17,16 +17,15 @@ openai.api_key = OPENAI
 CHANNEL_ID = 1111123852546805800  # Replace with your channel id
 
 @bot.event
-async def on_ready():
-    print('Logged on as', bot.user)
-
-@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
 
     if message.channel.id == CHANNEL_ID:
-        # Here, you can add the code to generate a message from GPT-3.5.
+        # Send the 'I'm thinking' message
+        thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
+
+        # Generate a message from GPT-3.5
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -34,9 +33,21 @@ async def on_message(message):
                 {"role": "user", "content": message.content},
             ],
         )
-        await message.channel.send(response.choices[0].message['content'])
 
-    # This line is needed so the bot can process commands.
+        # Delete the 'I'm thinking' message
+        await thinking_message.delete()
+
+        # Create an embed message
+        embed = discord.Embed(
+            title="ChatGPT Response",
+            description=f"{message.author.mention}님 질문하신\n{response.choices[0].message['content']}\n에 대한 답변입니다",
+            color=discord.Color.blue()
+        )
+
+        # Send the generated message
+        await message.channel.send(embed=embed)
+
+    # Process commands after the message event
     await bot.process_commands(message)
 
 bot.run(TOKEN)

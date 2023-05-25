@@ -42,6 +42,7 @@ async def on_message(message):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=user_sessions[message.author.id],
+            max_tokens=100 
         )
 
         # Append AI message to the user's session

@@ -15,7 +15,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 openai.api_key = OPENAI
-CHANNEL_ID = 1111123852546805800  # Replace with your channel id
+CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # Replace with your channel id
 
 user_sessions = {}
 
@@ -25,7 +25,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if message.channel.id == CHANNEL_ID:
+    if message.channel.id in CHANNEL_IDS:
         # Send the 'I'm thinking' message
         thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
 

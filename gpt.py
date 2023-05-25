@@ -25,10 +25,15 @@ async def on_message(message):
         return
 
     if message.channel.id == CHANNEL_ID:
-        # Here, you would add the code to generate a message from GPT-3.5
-        # For now, we'll just respond with "gpt-3.5-turbo".
-        response = "gpt-3.5-turbo"
-        await message.channel.send(response)
+        # Here, you can add the code to generate a message from GPT-3.5.
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": message.content},
+            ],
+        )
+        await message.channel.send(response.choices[0].message['content'])
 
     # This line is needed so the bot can process commands.
     await bot.process_commands(message)

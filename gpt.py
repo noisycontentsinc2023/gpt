@@ -29,10 +29,10 @@ async def on_message(message):
         return
 
     if message.channel.id == CHANNEL_ID:
-        # Send the 'I'm thinking' message
-        thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각하는 중...")
+        # '생각 중입니다' 메시지 보내기
+        thinking_message = await message.channel.send(f"{message.author.mention}님의 질문에 대해 생각 중입니다...")
 
-        # Append user message to their messages list
+        # 사용자 메시지를 사용자 메시지 목록에 추가
         if message.author.id not in user_messages:
             user_messages[message.author.id] = []
         user_messages[message.author.id].append({
@@ -40,44 +40,44 @@ async def on_message(message):
             "content": message.content
         })
 
-        # Generate a conversation history for GPT-3.5
+        # GPT-3.5를 위한 대화 히스토리 생성
         conversation_history = [
             {"role": "system", "content": "You are a helpful assistant."},
         ] + user_messages[message.author.id]
 
-        # Generate a message from GPT-3.5
+        # GPT-3.5에서 메시지 생성
         loop = asyncio.get_event_loop()
         partial_func = functools.partial(openai.ChatCompletion.create, model="gpt-3.5-turbo")
-        response = await loop.run_in_executor(None, partial_func, conversation_history)  # Pass conversation_history as argument
+        response = await loop.run_in_executor(None, partial_func, conversation_history)  # 대화 히스토리를 인수로 전달
 
-        # Append AI message to the user's messages list
+        # AI 메시지를 사용자 메시지 목록에 추가
         user_messages[message.author.id].append({
             "role": "assistant",
             "content": response.choices[0].message['content']
         })
 
-        # Delete the 'I'm thinking' message
+        # '생각 중입니다' 메시지 삭제
         await thinking_message.delete()
 
-        # Create an embed message
+        # 내장 메시지 생성
         response_text = response.choices[0].message['content']
 
-        # Truncate the response_text if it is too long
+        # 응답 텍스트가 너무 길면 자르기
         if len(response_text) > 2000:
             response_text = response_text[:1997] + '...'
 
-        # Encode response_text using 'utf-8' codec
+        # 응답 텍스트를 'utf-8' 코덱을 사용하여 인코딩
         response_text = response_text.encode('utf-8', 'ignore').decode('utf-8')
 
         embed = discord.Embed(
-            title="ChatGPT Response",
+            title="ChatGPT 응답",
             description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response_text}",
             color=discord.Color.blue()
         )
         embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")
         await message.channel.send(embed=embed)
 
-    # Process commands after the message event
+    # 메시지 이벤트 이후에 명령어를 처리합니다.
     await bot.process_commands(message)
 
 bot.run(TOKEN)

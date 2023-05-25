@@ -48,7 +48,7 @@ async def on_message(message):
         # GPT-3.5에서 메시지 생성
         loop = asyncio.get_event_loop()
         partial_func = functools.partial(openai.ChatCompletion.create, model="gpt-3.5-turbo")
-        response = await loop.run_in_executor(None, partial_func, conversation_history)  # 대화 히스토리를 인수로 전달
+        response = await loop.run_in_executor(None, partial_func, conversation_history, encoding='utf-8')
 
         # AI 메시지를 사용자 메시지 목록에 추가
         user_messages[message.author.id].append({

@@ -3,14 +3,15 @@ import discord
 import os
 from discord.ext import commands
 
+# Load your OpenAI and Discord Tokens
+TOKEN = os.environ['TOKEN']
+OPENAI = os.environ['OPENAI']
+PREFIX = os.environ['PREFIX']
+
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
-
-# Load your OpenAI and Discord Tokens
-TOKEN = os.environ['TOKEN']
-OPENAI = os.environ['OPENAI']
 
 CHANNEL_ID = 1111123852546805800  # Replace with your channel id
 

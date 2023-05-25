@@ -40,7 +40,7 @@ async def on_message(message):
         # Create an embed message
         embed = discord.Embed(
             title="ChatGPT Response",
-            description=f"{message.author.mention}님 질문하신\n{response.choices[0].message['content']}\n에 대한 답변입니다",
+            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response.choices[0].message['content']}",
             color=discord.Color.blue()
         )
 

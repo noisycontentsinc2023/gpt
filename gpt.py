@@ -27,9 +27,9 @@ async def ai_response(session, conversation):
         "Content-Type": "application/json",
         "Authorization": f"Bearer {OPENAI}"
     }
-    data = json.dumps({
+    data = {
         "messages": conversation
-    })
+    }
 
     async with session.post(url, headers=headers, data=data) as resp:
         if resp.status == 200:

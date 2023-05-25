@@ -19,6 +19,21 @@ CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # Replace with your c
 
 user_sessions = {}
 
+async def ai_response(session, conversation):
+    url = "https://api.openai.com/v1/engines/gpt-3.5-turbo/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {OPENAI}"
+    }
+    data = json.dumps({
+        "messages": conversation
+    })
+
+    async with session.post(url, headers=headers, data=data) as resp:
+        if resp.status == 200:
+            return await resp.json()
+        else:
+            return None
 
 @bot.event
 async def on_message(message):
@@ -38,16 +53,18 @@ async def on_message(message):
             "content": message.content
         })
 
-        # Generate a message from GPT-3.5
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=user_sessions[message.author.id],
-        )
+        async with aiohttp.ClientSession() as session:
+            # Generate a message from GPT-3.5
+            response = await ai_response(session, user_sessions[message.author.id])
+            if response is None:
+                await thinking_message.delete()
+                await message.channel.send("There was an issue generating a response, please try again later.")
+                return
 
         # Append AI message to the user's session
         user_sessions[message.author.id].append({
             "role": "assistant",
-            "content": response.choices[0].message['content']
+            "content": response['choices'][0]['message']['content']
         })
 
         # Delete the 'I'm thinking' message
@@ -56,7 +73,7 @@ async def on_message(message):
         # Create an embed message
         embed = discord.Embed(
             title="ChatGPT Response",
-            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response.choices[0].message['content']}",
+            description=f"{message.author.mention}님의 질문에 대한 답변입니다\n{response['choices'][0]['message']['content']}",
             color=discord.Color.blue()
         )
         embed.set_footer(text="이 답변은 ChatGPT 3.5 모델로 작성되었습니다")

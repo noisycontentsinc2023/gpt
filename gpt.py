@@ -2,7 +2,9 @@ import openai
 import discord
 import os
 import asyncio
+import functools
 from discord.ext import commands
+
 
 
 # Load your OpenAI and Discord Tokens

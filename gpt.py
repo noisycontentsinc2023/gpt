@@ -20,8 +20,6 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 openai.api_key = OPENAI
 CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # Replace with your channel id
 
-user_sessions = {}
-
 
 user_sessions = {}
 user_limits = {}

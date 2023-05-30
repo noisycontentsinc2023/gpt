@@ -45,7 +45,7 @@ async def on_message(message):
 
     # If the user has reached their limit, let them know
     if usage_counts[message.author.name] >= LIMIT_PER_DAY:
-        await message.channel.send(f"{message.author.mention} You've reached your daily limit of {LIMIT_PER_DAY} interactions. Please wait until tomorrow.")
+        await message.channel.send(f"{message.author.mention}님 오늘의 사용 가능 횟수 {LIMIT_PER_DAY} 회를 모두 사용하셨어요! 내일 다시 이용해주세요")
         return
 
     # Initialize the conversation if needed
@@ -75,7 +75,7 @@ async def on_message(message):
 
     # Send the response and remaining counts
     remaining_counts = LIMIT_PER_DAY - usage_counts[message.author.name]
-    await message.channel.send(f"{message.author.mention} {response.choices[0].message['content']}\n\nYou have {remaining_counts} interactions remaining today.")
+    await message.channel.send(f"{message.author.mention} {response.choices[0].message['content']}\n\n앞으로 {remaining_counts} 회 더 이용 가능하세요! 서버 과부하를 방지하기 위해 하루 5회로 제한되어 있습니다")
 
 # Run the bot
 bot.run(TOKEN)

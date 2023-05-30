@@ -30,7 +30,7 @@ ongoing_conversations = {}
 async def on_message(message):
     global reset_time
     # Ignore messages from the bot itself
-    if message.author == bot.user:
+    if message.author.id == bot.user.id:
         return
 
     # Only respond in the specified channel

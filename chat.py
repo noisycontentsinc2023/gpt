@@ -2,9 +2,10 @@ import openai
 import discord
 import os
 import asyncio
-import datetime
 import pytz
 import concurrent.futures
+from datetime import datetime, timedelta
+from collections import defaultdict
 from discord.ext import commands
 
 # Load your OpenAI and Discord Tokens
@@ -20,6 +21,9 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 openai.api_key = OPENAI
 CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # Replace with your channel ids
 
+LIMIT_PER_DAY = 5
+usage_counts = defaultdict(int)
+reset_time = datetime.now(pytz.timezone('Asia/Seoul')).date()
 ongoing_conversations = {}
 
 @bot.event
@@ -30,6 +34,17 @@ async def on_message(message):
 
     # Only respond in the specified channel
     if message.channel.id not in CHANNEL_IDS:
+        return
+
+    # Reset usage counts if a new day has started
+    now = datetime.now(pytz.timezone('Asia/Seoul')).date()
+    if now > reset_time:
+        usage_counts.clear()
+        reset_time = now
+
+    # If the user has reached their limit, let them know
+    if usage_counts[message.author.name] >= LIMIT_PER_DAY:
+        await message.channel.send(f"{message.author.mention} You've reached your daily limit of {LIMIT_PER_DAY} interactions. Please wait until tomorrow.")
         return
 
     # Initialize the conversation if needed
@@ -54,8 +69,12 @@ async def on_message(message):
         "content": response.choices[0].message['content']
     })
 
-    # Send the response
-    await message.channel.send(f"{message.author.mention} {response.choices[0].message['content']}")
+    # Increment the usage count for this user
+    usage_counts[message.author.name] += 1
+
+    # Send the response and remaining counts
+    remaining_counts = LIMIT_PER_DAY - usage_counts[message.author.name]
+    await message.channel.send(f"{message.author.mention} {response.choices[0].message['content']}\n\nYou have {remaining_counts} interactions remaining today.")
 
 # Run the bot
 bot.run(TOKEN)

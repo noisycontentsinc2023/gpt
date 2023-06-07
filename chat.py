@@ -19,7 +19,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 openai.api_key = OPENAI
-CHANNEL_IDS = [1111123852546805800, 1111138777453305967]   # 채널 아이디 넣으시고 콤마로 구분하심 됩니다
+CHANNEL_IDS = [1111123852546805800, 1111138777453305967, 1115886685725659221]   # 채널 아이디 넣으시고 콤마로 구분하심 됩니다
 
 LIMIT_PER_DAY = 5 # 하루 최대 이용 횟수 
 usage_counts = defaultdict(int)
